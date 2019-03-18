@@ -1,11 +1,15 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
 
-const folderPath = 'dist/src/js';
+const folderPath = 'dist/src';
 const htmlFolderPath = 'dist';
 
 const isDev = process.env.NODE_ENV === 'development';
 const minifyHTML = !isDev;
+
+var dotenv = require('dotenv').config({path: __dirname + '/.env'});
+dotenv = dotenv.parsed;
 
 module.exports = {
     entry: './resources/app.js',
@@ -14,10 +18,31 @@ module.exports = {
         filename: 'main.js',
     },
     module: {
-        rules: [{
-            test: /\.(s*)css$/,
-            loaders: ['style-loader','css-loader', 'sass-loader'],
-        }]
+        rules: [
+            {
+                test: /\.(s*)css$/,
+                loaders: ['style-loader','css-loader', 'sass-loader'],
+            },
+            {
+                test: /\.(eot|svg|ttf|woff|woff2)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: '../src/fonts/',
+                            publicPath: 'src/fonts'
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.vue$/,
+                use:
+                    {
+                        loader: 'vue-loader',
+                    },
+            }
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -39,6 +64,30 @@ module.exports = {
                 removeStyleLinkTypeAttributese : minifyHTML,
                 useShortDoctype                : minifyHTML
             },
-        })
-    ]
+        }),
+        // new HtmlWebpackExternalsPlugin({
+        //     externals: [
+                // {
+                //     module: 'googleApi',
+                //     entry: {
+                //         path: 'https://maps.googleapis.com/maps/api/js?key=' + dotenv.GOOGLE_API_KEY,
+                //         type: 'js',
+                //     }
+                // },
+        //     ],
+        // })
+    ],
+    resolve: {
+        modules: [
+            path.resolve('./resources/js'),
+            path.resolve('./node_modules'),
+        ],
+        alias: {
+            '~style': path.join(__dirname, 'resources/scss'), 
+            '~': path.join(__dirname, 'resources/js') ,
+            'vue$': 'vue/dist/vue.runtime.esm.js'
+        },
+        extensions: ['.js', '.vue', '.json'],
+    }
+
 };

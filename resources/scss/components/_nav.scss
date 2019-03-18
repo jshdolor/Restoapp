@@ -1,0 +1,44 @@
+#side-mobile {
+    width: $side-nav-width;
+
+    .logo {
+
+        align-items: center;
+        background-color: $primary-color;
+
+        h5 {
+            display: block;
+            margin: 8px 0px -12px 18px;
+            padding-top:4px;
+            color:$text-color;
+        }
+        .brand-logo {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            height: 120px;
+
+            img {
+
+                width: auto;
+                height: $logo-height;
+            }
+        }
+
+    }
+
+    h6 {
+        margin-left: 20px;
+    }
+    
+    .resturant-list{
+        max-height: 300px;
+        overflow-y: scroll;
+
+        .material-icons {
+            vertical-align: middle;
+            margin-top:-7px;
+            @extend .red-text;
+        }
+    }
+    
+}

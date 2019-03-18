@@ -1,0 +1,51 @@
+<ul id="side-mobile" class="sidenav z-depth-2 sidenav-fixed" style="transform: translateX(0px);">
+    <li class="logo">
+        <a id="logo-container" href="/" class="brand-logo row">
+            <div class="col s3">
+                <img :src="logo">
+            </div>
+            <div class="col s9 ">
+                <h5> 
+                    Restaurant  
+                </h5> 
+                <h5> 
+                    Finder
+                </h5> 
+            </div>
+             
+        </a>
+    </li>
+    
+    <!-- <li class="search">
+        <div class="row">
+            <div class="col s12">
+                    <SearchBar></SearchBar>
+            </div>
+        </div>
+    </li> -->
+    <li>
+        <h6>Restaurants</h6>
+    </li>
+    <li>
+        <div  class='resturant-list'>
+            <ul>
+                <li class="bold" v-for="restaurant in restaurants">
+                    <a @click='showRestaurantInfo(restaurant)' class="waves-effect waves-teal">
+                        <span class="material-icons">place</span>
+                        {{restaurant.name}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="filter-container">
+        <h6>Filters</h6>
+        <div class="chips-container">
+            <Chip v-for="type in Object.keys(filterTypes)" 
+                :type="type" 
+                :key=type 
+                v-on:chip:toggled="toggleFilter"></Chip>
+        </div>
+    </li>
+    
+</ul>

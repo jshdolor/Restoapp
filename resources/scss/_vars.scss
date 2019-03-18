@@ -1,0 +1,16 @@
+$primary-color: #009688;
+$primary-color-light: false;
+$primary-color-dark: false;
+@if not $primary-color-light {
+    $primary-color-light: lighten($primary-color, 15%);
+}
+@if not $primary-color-dark {
+    $primary-color-dark: darken($primary-color, 15%);
+}
+$secondary-color: #8BC34A;
+
+$link-color: darken($secondary-color, 15%);
+$side-nav-width : 360px !default;
+
+$logo-height: 80px !default;
+$text-color: #ffffff !default;

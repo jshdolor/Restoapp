@@ -1,0 +1,15 @@
+.filter-container {
+
+    .chips-container {
+        padding:10px;
+    }
+
+    .chip{
+        &.chip-checked {
+            @extend .teal;
+            color: #fff;
+        }
+
+        cursor: pointer;
+    }
+}
