@@ -19,4 +19,8 @@ export default {
     storeMarkers(state, data) {
         state.markers = data;
     },
+
+    setSelectedRestaurant(state, data) {
+        state.selectedRestaurant = data;
+    },
 }

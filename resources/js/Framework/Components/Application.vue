@@ -1,5 +1,5 @@
 <template>
-    <div id="App" v-if="!isLoading">
+    <div id="app" v-if="!isLoading">
         <SideNav></SideNav>
         <Map></Map>
     </div>

@@ -3,6 +3,10 @@ import axios from 'axios';
 import Boot from '~/Framework/Bootstrap';
 
 
+//materialize js components
+import '~/Framework/Plugins/Materialize';
+
+
 /**
  * Make all global objects ready upon bootstrap
  * before toggling the switch.

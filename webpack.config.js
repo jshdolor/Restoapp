@@ -9,7 +9,8 @@ const isDev = process.env.NODE_ENV === 'development';
 const minifyHTML = !isDev;
 
 var dotenv = require('dotenv').config({path: __dirname + '/.env'});
-dotenv = dotenv.parsed;
+
+const APIKEY = dotenv.parsed ? dotenv.parsed.GOOGLE_API_KEY : '';
 
 module.exports = {
     entry: './resources/app.js',
@@ -49,6 +50,9 @@ module.exports = {
             filename: path.resolve(__dirname, htmlFolderPath+'/index.html'),
             template: path.resolve(__dirname, 'resources/index.html'),
             chunks: ['main'],
+            templateParameters: {
+                '__APIKEY__': APIKEY
+            },
             minify   : {
                 html5                          : minifyHTML,
                 collapseWhitespace             : minifyHTML,
@@ -64,18 +68,7 @@ module.exports = {
                 removeStyleLinkTypeAttributese : minifyHTML,
                 useShortDoctype                : minifyHTML
             },
-        }),
-        // new HtmlWebpackExternalsPlugin({
-        //     externals: [
-                // {
-                //     module: 'googleApi',
-                //     entry: {
-                //         path: 'https://maps.googleapis.com/maps/api/js?key=' + dotenv.GOOGLE_API_KEY,
-                //         type: 'js',
-                //     }
-                // },
-        //     ],
-        // })
+        })
     ],
     resolve: {
         modules: [

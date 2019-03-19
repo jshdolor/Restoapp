@@ -15,5 +15,8 @@ export default {
     storeMarkers({commit}, data) {
         commit('storeMarkers',data);
     },
+    setSelectedRestaurant({commit}, data) {
+        commit('setSelectedRestaurant',data);
+    },
 
 };

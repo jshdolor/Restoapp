@@ -10,9 +10,19 @@ export default class Restaurant {
         this._rating = propertyValue(data, 'rating', 0);
         this._type = propertyValue(data, 'types', []);
         this._name = propertyValue(data, 'name', '');
-        this._marker = null;
-
         this._id = propertyValue(data, 'id', null);
+
+        this._photo = propertyValue(data, 'photos', null);
+
+        this._address = null;
+        this._website = null;
+        this._phoneNumber = null;
+
+        this._marker = new google.maps.Marker({
+            position: this.getCoordinates(),
+            title: this.name
+        });
+
     }
 
     get id() {
@@ -59,10 +69,39 @@ export default class Restaurant {
         this._infowindow = value;
     }
 
+    get photo() {
+        return this._photo[0] ? this._photo[0] : null;
+    }
+
+    get address() {
+        return this._address;
+    }
+
+    set address(value) {
+        this._address = value;
+    }
+
+    get website() {
+        return this._website;
+    }
+
+    set website(value) {
+        this._website = value;
+    }
+
+    get phoneNumber() {
+        return this._phoneNumber;
+    }
+
+    set phoneNumber(value) {
+        this._phoneNumber = value;
+    }
+
     getCoordinates() {
         return {
             lng:this.lng,
             lat:this.lat,
         }
     }
+    
 }

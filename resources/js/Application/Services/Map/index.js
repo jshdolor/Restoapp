@@ -2,9 +2,9 @@ import GClient from '~/Infrastructure/GoogleClient/Maps';
 
 export default class MapService {
 
-    static getConfig(){
+    static getConfig() {
         return {
-            libraries : ['places']
+            libraries: ['places', 'drawing']
         }
     }
 
@@ -13,4 +13,5 @@ export default class MapService {
             .get()
             .then(data => data);
     }
+
 }

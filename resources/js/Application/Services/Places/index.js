@@ -2,12 +2,16 @@ import Config from '~/Application/Config';
 
 export default class PlacesService{
     
-    static getPlaceId(service) {
+    static getPlaceId(service, config) {
+
+        if(!config) {
+            config = Config.cityRequest;
+        }
 
         return new Promise((resolve, reject) => {
             
             service.findPlaceFromQuery(
-                Config.cityRequest, 
+                config,
                 ([results] = [], status)  => {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
                         resolve(results.place_id);
@@ -31,10 +35,13 @@ export default class PlacesService{
         return new Promise((resolve, reject) => {
 
             service[searchType[fetchType]](config , (data) => {
-                if(!data) {
+
+                if(data.length === 0) {
+                    M.toast({html: "No Restaurants Fetched..", displayLength: 2000});
                     reject(new Error("No Restaurants"));
+                } else {
+                    resolve(data);
                 }
-                resolve(data);
             });
 
         })
@@ -56,30 +63,4 @@ export default class PlacesService{
         
     }
 
-
-    // getPlaceId(map) {
-    //     let service = new google.maps.places.PlacesService(map);
-        
-    //     return service.findPlaceFromQuery(Config.cityRequest, ([results] = [], status)  => {
-
-    //         // let request = {
-    //         //     placeId: results.place_id,
-    //         //     fields: ['name', 'rating', 'formatted_phone_number', 'geometry'],
-    //         //     type: ['restaurant']
-    //         //   };
-    //         // service.getDetails(request, );
-
-    //     let sydney = new google.maps.LatLng(Config.map.lat, Config.map.lng);
-    //         service.nearbySearch({
-    //             location: map.getCenter(),
-    //             radius: 50000,
-    //             query: 'restaurants',
-    //         }, (d) => {console.log(d)});
-
-    //         if (status === google.maps.places.PlacesServiceStatus.OK) {
-    //             window.Store.dispatch('map/storePlaceId',results.place_id);
-    //         }
-    //     });
-        
-    // }
 }

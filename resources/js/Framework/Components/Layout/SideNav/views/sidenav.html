@@ -15,7 +15,6 @@
              
         </a>
     </li>
-    
     <!-- <li class="search">
         <div class="row">
             <div class="col s12">
@@ -23,11 +22,11 @@
             </div>
         </div>
     </li> -->
-    <li>
-        <h6>Restaurants</h6>
+    <li class="row">
+        <h6 class="col s12">Restaurants</h6>
     </li>
     <li>
-        <div  class='resturant-list'>
+        <div  class='resturant-list' v-if='!isLoading'>
             <ul>
                 <li class="bold" v-for="restaurant in restaurants">
                     <a @click='showRestaurantInfo(restaurant)' class="waves-effect waves-teal">
@@ -37,15 +36,22 @@
                 </li>
             </ul>
         </div>
+        <Preloader v-if="isLoading"></Preloader>
     </li>
     <li class="filter-container">
-        <h6>Filters</h6>
-        <div class="chips-container">
+        <h6 class='row'>
+            <span class="col s6">Filters</span>
+            <span class="col s6">
+                    Shown: {{restaurants.filter(r => r.marker.visible === true).length}}
+            </span>
+        </h6>
+        <div class="chips-container" v-if="!isLoading">
             <Chip v-for="type in Object.keys(filterTypes)" 
                 :type="type" 
                 :key=type 
                 v-on:chip:toggled="toggleFilter"></Chip>
         </div>
+        <Preloader v-if="isLoading"></Preloader>
     </li>
     
 </ul>

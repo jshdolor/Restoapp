@@ -4,6 +4,7 @@ export default {
     restaurants: [],
     placeId: null,
     placesService: null,
-    markers:[]
+    markers:[],
+    selectedRestaurant: {}
 
 };
