@@ -1,4 +1,5 @@
 import {propertyValue} from '~/Framework/Helpers';
+import Storage from '~/Infrastructure/Storage';
 
 export default class Restaurant {
 
@@ -23,10 +24,27 @@ export default class Restaurant {
             title: this.name
         });
 
+        this._visitors = Storage.get(this.placeId) || 0;
+
+    }
+
+    get visitors() {
+        return this._visitors;
+    }
+
+    set visitors(value) {
+        this._visitors = value;
+    } 
+
+    addVisitor() {
+        let count = parseInt(this.visitors);
+        this.visitors = ++count;
+        Storage.set(this.placeId, count);
+        return true;
     }
 
     get id() {
-        return this._id();
+        return this._id;
     }
 
     get lng() {

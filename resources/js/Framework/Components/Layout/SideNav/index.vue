@@ -121,7 +121,7 @@ export default {
                 content: instance.$el,
             });
 
-            google.maps.event.addListener(resto.infowindow , 'closeclick',function(){
+            google.maps.event.addListener(resto.infowindow , 'closeclick',() => {
                 this.$store.dispatch('map/setSelectedRestaurant', {});
             });
             
@@ -144,6 +144,7 @@ export default {
 
             if(restaurant.marker.visible) {
 
+                restaurant.addVisitor();
                 //close all infowindow
                 this.restaurants.forEach(r => r.infowindow.close());
 

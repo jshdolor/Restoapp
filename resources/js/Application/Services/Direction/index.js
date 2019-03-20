@@ -1,65 +1,97 @@
 import PlacesService from '~/Application/Services/Places';
+import HttpClient from '~/Infrastructure/Http';
 
 export default class DirectionService {
 
+   
     static getUserCoordinates() {
-        // Try HTML5 geolocation.
 
-        //geolocation - only allowed on https protocol
-        //had to force this to cebu city for testing
-        return new google.maps.LatLng(
-            10.315699,
-            123.885437,
-        );
+        return new Promise((resolve, reject) => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+    
+                        resolve(new google.maps.LatLng(
+                            position.coords.latitude, 
+                            position.coords.longitude
+                        ));
+                        
+                    },
+                    () => {
+                        new HttpClient().get('https://ipinfo.io/geo?token=09f3af7b0cbb22')
+                            .then(response => {
+                                let loc = response.loc.split(',');
+                                resolve(new google.maps.LatLng(loc[0], loc[1]));
+                            }).catch((e) => {
+                                M.toast({
+                                    html: 'Geolocation:failed',
+                                    displayLength: 2000
+                                });
+                            });
+                    }
+                );
+            } else {
+                new HttpClient().get('https://ipinfo.io/geo?token=09f3af7b0cbb22')
+                    .then(response => {
+                        let loc = response.loc.split(',');
+                        resolve(new google.maps.LatLng(loc[0], loc[1]));
+                    }).catch((e) => {
+                        M.toast({
+                            html: 'Geolocation:failed',
+                            displayLength: 2000
+                        });
+                    });
+            }
+        });
+    }
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
+    static ds() {
+        return this.directionsService || null;
+    }
 
-                    return new google.maps.LatLng(
-                        position.coords.latitude, 
-                        position.coords.longitude
-                    );
-                    
-                },
-                () => {
+    static dd() {
+        return this.directionsDisplay || null;
+    }
+
+    static getDirections(service, destination, map, cb) {
+
+        if(!this.ds()) {
+            this.directionsService = new google.maps.DirectionsService();
+        }
+        if(!this.dd()) {
+            this.directionsDisplay = new google.maps.DirectionsRenderer();
+        }
+
+        this.dd().set('directions', null);
+        this.dd().setMap(map);
+
+        this.getUserCoordinates().then(origin => {
+
+            let request = {
+                origin: origin,
+                destination: new google.maps.LatLng(destination.lat, destination.lng),
+                travelMode: 'DRIVING'
+            };
+
+            M.toast({
+                html: `Current Position: (${origin.lat()},${origin.lng()})`,
+            });
+
+            this.ds().route(request, (dresult, dstatus) => {
+                if (dstatus == 'OK') {
+                    console.log(dresult);
+                    this.dd().setDirections(dresult);
+                } else {
                     M.toast({
-                        html: 'Geolocation:failed',
+                        html: dstatus,
                         displayLength: 2000
                     });
                 }
-            );
-        } else {
-            M.toast({
-                html: 'Browser doesn\'t support Geolocation',
-                displayLength: 2000
+                if(cb) {
+                    cb();
+                }
             });
-        }
-    }
-
-    static getDirections(service, destination, map) {
-
-        let directionsService = new google.maps.DirectionsService();
-        let directionsDisplay = new google.maps.DirectionsRenderer();
-        directionsDisplay.setMap(null);
-        directionsDisplay.setMap(map);
-
-        let request = {
-            origin: this.getUserCoordinates(),
-            destination: new google.maps.LatLng(destination.lat, destination.lng),
-            travelMode: 'DRIVING'
-        };
-
-        directionsService.route(request, (dresult, dstatus) => {
-            if (dstatus == 'OK') {
-                directionsDisplay.setDirections(dresult);
-            } else {
-                M.toast({
-                    html: dstatus,
-                    displayLength: 2000
-                });
-            }
-        });
+        })
 
     }
 

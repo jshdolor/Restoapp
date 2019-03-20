@@ -93,19 +93,16 @@ export default {
 
             PlacesService.getDetails(this.service, 0, restaurantSearchConfig)
                 .then(rawRestaurants => {
-
-                    let restaurants = [];
+                    
+                    M.toast({
+                        html:`<span>Found ${rawRestaurants.length} Restaurant/s</span>`
+                    });
 
                     rawRestaurants.forEach(resto => {
                         let restaurant = new RestaurantModel(resto);
-                        restaurants.push(restaurant);
+                        this.$store.state.map.restaurants.push(restaurant);
                     });
-                    console.log(restaurants);
-                    this.$store.dispatch('map/storeRestaurants', restaurants);
 
-                }).finally(() => {
-                    // this.initFilters()
-                    // this.isLoading = false;
                 });
         }
     },
