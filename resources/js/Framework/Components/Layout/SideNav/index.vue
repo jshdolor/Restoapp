@@ -190,6 +190,9 @@ export default {
                     let restaurants = [];
                     data.forEach(resto => {
                         let restaurant = new RestaurantModel(resto);
+                        restaurant.marker.addListener('click', () =>{
+                            this.$root.$emit('marker:click', restaurant);
+                        });
                         restaurants.push(restaurant);
                     });
 
@@ -210,6 +213,11 @@ export default {
 
             this.getRestaurants();
 
+        });
+
+        this.$root.$on('marker:click', (resto) => {
+            console.log(resto);
+            this.showRestaurantInfo(resto);
         });
 
     }
