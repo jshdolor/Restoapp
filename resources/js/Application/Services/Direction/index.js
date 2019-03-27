@@ -7,6 +7,7 @@ export default class DirectionService {
     static getUserCoordinates() {
 
         return new Promise((resolve, reject) => {
+            resolve(new google.maps.LatLng(10.315699, 123.885437));
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -53,45 +54,50 @@ export default class DirectionService {
         return this.directionsDisplay || null;
     }
 
-    static getDirections(service, destination, map, cb) {
+    static getDirections(service, destination, map) {
 
-        if(!this.ds()) {
-            this.directionsService = new google.maps.DirectionsService();
-        }
-        if(!this.dd()) {
-            this.directionsDisplay = new google.maps.DirectionsRenderer();
-        }
+        return new Promise((resolve, reject) => {
 
-        this.dd().set('directions', null);
-        this.dd().setMap(map);
+            if(!this.ds()) {
+                this.directionsService = new google.maps.DirectionsService();
+            }
+            if(!this.dd()) {
+                this.directionsDisplay = new google.maps.DirectionsRenderer();
+            }
+    
+            this.dd().set('directions', null);
+            this.dd().setMap(map);
+    
+            this.getUserCoordinates().then(origin => {
+    
+                let request = {
+                    origin: origin,
+                    destination: new google.maps.LatLng(destination.lat, destination.lng),
+                    travelMode: 'DRIVING'
+                };
+    
+                M.toast({
+                    html: `Current Position: (${origin.lat()},${origin.lng()})`,
+                });
+    
+                this.ds().route(request, (dresult, dstatus) => {
+                    if (dstatus == 'OK') {
+                        
+                        this.dd().setDirections(dresult);
+                        resolve(dresult);
+                    } else {
+                        M.toast({
+                            html: dstatus,
+                            displayLength: 2000
+                        });
+                    }
+                    
+                });
+            })
 
-        this.getUserCoordinates().then(origin => {
+        }) ;
 
-            let request = {
-                origin: origin,
-                destination: new google.maps.LatLng(destination.lat, destination.lng),
-                travelMode: 'DRIVING'
-            };
-
-            M.toast({
-                html: `Current Position: (${origin.lat()},${origin.lng()})`,
-            });
-
-            this.ds().route(request, (dresult, dstatus) => {
-                if (dstatus == 'OK') {
-                    console.log(dresult);
-                    this.dd().setDirections(dresult);
-                } else {
-                    M.toast({
-                        html: dstatus,
-                        displayLength: 2000
-                    });
-                }
-                if(cb) {
-                    cb();
-                }
-            });
-        })
+        
 
     }
 

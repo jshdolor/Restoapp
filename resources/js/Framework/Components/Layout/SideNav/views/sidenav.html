@@ -40,14 +40,16 @@
     </li>
     <li class="filter-container">
         <h6 class='row'>
-            <span class="col s6">Filters</span>
+            <span class="col s6">Filters
+                <div v-show="showReset" @click="resetFilters"><a href='#!'><small>Reset</small></a></div>
+            </span>
             <span class="col s6">
-                    Shown: {{restaurants.filter(r => r.marker.visible === true).length}}
+                Shown: {{restaurants.filter(r => r.marker.visible === true).length}}
             </span>
         </h6>
         <div class="chips-container" v-if="!isLoading">
             <Chip v-for="type in Object.keys(filterTypes)" 
-                :type="type" 
+                :type="type"
                 :key=type 
                 v-on:chip:toggled="toggleFilter"></Chip>
         </div>

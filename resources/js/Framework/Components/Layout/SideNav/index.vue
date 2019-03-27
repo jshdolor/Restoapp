@@ -33,6 +33,9 @@ export default {
         map() {
             return this.$store.state.map.map;
         },
+        showReset() {
+            return !!Object.values(this.filterTypes).filter(b => {return b === false}).length;
+        }
     },
     watch: {
         restaurants: {
@@ -68,6 +71,13 @@ export default {
                 this.markersShown += +show;
             });
 
+        },
+        resetFilters() {
+            Object.keys(this.filterTypes).forEach(filter => {
+                this.filterTypes[filter] = true;
+            })
+            this.$root.$emit('chip:reset', true);
+            this.toggleMarkers();
         },
         initMarker(resto) {
 

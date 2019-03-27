@@ -1,10 +1,7 @@
 <template>
     <div class="chip waves-effect waves-light" :class="{'chip-checked': checked}" @click="toggle">
         <small >{{formattedType}}</small>
-        <i  v-show="checked" 
-            class="close material-icons">
-            close
-        </i>
+        
     </div>
 </template>
 <script>
@@ -26,6 +23,11 @@ export default {
         return {
             checked: true
         }
+    },
+    mounted() {
+        this.$root.$on('chip:reset', () => {
+            this.checked = true;
+        })
     }
 }
 </script>
