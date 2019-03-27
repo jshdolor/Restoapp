@@ -23,7 +23,8 @@ export default {
             service: null,
             filterTypes: {},
             isLoading: true,
-            markersShown: 0
+            markersShown: 0,
+            getNextPage:null
         }
     },
     computed: {
@@ -176,13 +177,18 @@ export default {
                 radius: 50000,
                 type: ['restaurant'],
             };
+
+            this.fetchRestaurants(restaurantSearchConfig)
             
+        },
+
+        fetchRestaurants(restaurantSearchConfig) {
+
             PlacesService.getDetails(this.service, 0, restaurantSearchConfig)
-                .then(rawRestaurants => {
+                .then(data => {
 
                     let restaurants = [];
-
-                    rawRestaurants.forEach(resto => {
+                    data.forEach(resto => {
                         let restaurant = new RestaurantModel(resto);
                         restaurants.push(restaurant);
                     });
@@ -190,7 +196,6 @@ export default {
                     this.$store.dispatch('map/storeRestaurants', restaurants);
 
                 });
-
         }
     },
     mounted() {

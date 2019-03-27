@@ -2,6 +2,9 @@
 <div class="map-container">
     <div class="gmaps"></div>
     <DirectionButton></DirectionButton>
+    <div class="restaurant-loader">
+        <Loader v-show="isFetching"></Loader>
+    </div>
 </div>
 </template>
 
@@ -14,6 +17,8 @@ import RestaurantModel from '~/Application/Models/Restaurant';
 
 import DirectionButton from '~/Framework/Components/Widgets/DirectionButton';
 
+import Loader from '~/Framework/Components/Widgets/Preloader';
+
 import {
     propertyValue,
     pluck
@@ -23,7 +28,8 @@ import {
 export default {
     name: 'Map',
     components: {
-        DirectionButton
+        DirectionButton,
+        Loader,
     },
     computed: {
         map() {
@@ -42,7 +48,8 @@ export default {
     data() {
         return {
             manager: null,
-            circle: null
+            circle: null,
+            isFetching: false
         }
     },
     watch: {
@@ -91,6 +98,7 @@ export default {
                 type: ['restaurant'],
             };
 
+            this.isFetching = true;
             PlacesService.getDetails(this.service, 0, restaurantSearchConfig)
                 .then(rawRestaurants => {
                     
@@ -103,6 +111,9 @@ export default {
                         this.$store.state.map.restaurants.push(restaurant);
                     });
 
+                })
+                .finally(() => {
+                    this.isFetching = false;
                 });
         }
     },

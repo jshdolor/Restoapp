@@ -5,7 +5,8 @@ export default class GoogleMaps {
     constructor(config = {}) {
 
         this.config = Object.assign(config, {
-            apiKey: __APIKEY__
+            apiKey: __APIKEY__,
+            fields: ['pagetoken']
         });
 
         this.gapi = GoogleMapsApiLoader(this.config);

@@ -1,4 +1,5 @@
 import Config from '~/Application/Config';
+import RestaurantModel from '~/Application/Models/Restaurant';
 
 export default class PlacesService{
     
@@ -31,17 +32,24 @@ export default class PlacesService{
             'findPlaceFromQuery',
             'textSearch'
         ];
+        
+        let resultData = [];
 
         return new Promise((resolve, reject) => {
+            service[searchType[fetchType]](config , (data, status, pagination) => {
 
-            service[searchType[fetchType]](config , (data) => {
+                resultData = resultData.concat(data);
 
-                if(data.length === 0) {
+                if(pagination.hasNextPage) {
+                    pagination.nextPage();
+                } else {
+                    resolve(resultData);
+                }
+
+                if(resultData.length === 0) {
                     M.toast({html: "No Restaurants Fetched..", displayLength: 2000});
                     reject(new Error("No Restaurants"));
-                } else {
-                    resolve(data);
-                }
+                } 
             });
 
         })
