@@ -7,7 +7,7 @@ export default class DirectionService {
     static getUserCoordinates() {
 
         return new Promise((resolve, reject) => {
-            resolve(new google.maps.LatLng(10.315699, 123.885437));
+            // resolve(new google.maps.LatLng(10.315699, 123.885437));
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
