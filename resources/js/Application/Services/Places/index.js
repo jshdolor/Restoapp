@@ -60,7 +60,7 @@ export default class PlacesService{
         return new Promise((resolve, reject) => {
 
             service.getDetails(request, (info) => {
-                
+                console.log(request);
                 if(!info){
                     reject(new Error("No Info"));
                 }

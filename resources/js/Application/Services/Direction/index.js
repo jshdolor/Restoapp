@@ -19,29 +19,15 @@ export default class DirectionService {
                         
                     },
                     () => {
-                        new HttpClient().get('https://ipinfo.io/geo?token=09f3af7b0cbb22')
-                            .then(response => {
-                                let loc = response.loc.split(',');
-                                resolve(new google.maps.LatLng(loc[0], loc[1]));
-                            }).catch((e) => {
-                                M.toast({
-                                    html: 'Geolocation:failed',
-                                    displayLength: 2000
-                                });
-                            });
+                        M.toast({
+                            html: `Position Not Found!`,
+                        });
                     }
                 );
             } else {
-                new HttpClient().get('https://ipinfo.io/geo?token=09f3af7b0cbb22')
-                    .then(response => {
-                        let loc = response.loc.split(',');
-                        resolve(new google.maps.LatLng(loc[0], loc[1]));
-                    }).catch((e) => {
-                        M.toast({
-                            html: 'Geolocation:failed',
-                            displayLength: 2000
-                        });
-                    });
+                M.toast({
+                    html: `Position Not Found!`,
+                });
             }
         });
     }
