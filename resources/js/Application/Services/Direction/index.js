@@ -22,6 +22,11 @@ export default class DirectionService {
                         M.toast({
                             html: `Position Not Found!`,
                         });
+                    },
+                    {
+                        enableHighAccuracy: true, 
+                        maximumAge        : 30000, 
+                        timeout           : 27000
                     }
                 );
             } else {
