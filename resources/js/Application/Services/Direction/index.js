@@ -20,7 +20,7 @@ export default class DirectionService {
                     },
                     () => {
                         M.toast({
-                            html: `Position Not Found!`,
+                            html: `Position Not Found! Allow your browser to locate your position.`,
                         });
                     },
                     {
