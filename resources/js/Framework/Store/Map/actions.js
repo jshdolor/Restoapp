@@ -18,5 +18,8 @@ export default {
     setSelectedRestaurant({commit}, data) {
         commit('setSelectedRestaurant',data);
     },
+    toggleFilter({commit}, data) {
+        commit('toggleFilter',data);
+    }
 
 };

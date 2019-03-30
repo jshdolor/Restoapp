@@ -41,19 +41,20 @@
     <li class="filter-container">
         <h6 class='row'>
             <span class="col s6">Filters
-                <div v-show="showReset" @click="resetFilters"><a href='#!'><small>Reset</small></a></div>
+                <div v-show="filters.filter(f=>f.status).length" @click="resetFilters"><a href='#!'><small>Reset</small></a></div>
             </span>
             <span class="col s6">
-                Shown: {{restaurants.filter(r => r.marker.visible === true).length}}
+                Found: {{restaurants.length}}
             </span>
         </h6>
-        <div class="chips-container" v-if="!isLoading">
-            <Chip v-for="type in Object.keys(filterTypes)" 
-                :type="type"
-                :key=type 
-                v-on:chip:toggled="toggleFilter"></Chip>
+        <div class="chips-container">
+            <div
+                :style="{'pointer-events':isLoading ? 'none':'auto'}"  
+                v-for="(filter,key) in filters" class="chip waves-effect waves-light" 
+                :class="{'chip-checked': filter.status}" @click="toggleFilters(key, filter.status)">
+                <small >{{filter.name}}</small>
+            </div>
         </div>
-        <Preloader v-if="isLoading"></Preloader>
     </li>
     
 </ul>

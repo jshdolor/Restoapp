@@ -10,6 +10,8 @@ import RestaurantModel from '~/Application/Models/Restaurant';
 
 import InfoWindowComponent from '~/Framework/Components/Widgets/InfoWindow';
 
+import {pluck} from '~/Framework/Helpers';
+
 export default {
     name: 'SideNav',
     components: {
@@ -21,10 +23,10 @@ export default {
         return {
             logo: 'https://freeiconshop.com/wp-content/uploads/edd/location-map-flat.png',
             service: null,
-            filterTypes: {},
             isLoading: true,
             markersShown: 0,
-            getNextPage:null
+            getNextPage:null,
+            debounceTimer:null
         }
     },
     computed: {
@@ -34,8 +36,11 @@ export default {
         map() {
             return this.$store.state.map.map;
         },
-        showReset() {
-            return !!Object.values(this.filterTypes).filter(b => {return b === false}).length;
+        filters() {
+            return this.$store.state.map.filters;
+        },
+        queryText() {
+            return pluck(this.filters.filter(p => p.status), 'name').join(',');
         }
     },
     watch: {
@@ -43,7 +48,6 @@ export default {
             handler(newVal, oldVal) {
                 this.isLoading = true;
                 newVal.forEach((newResto) => {
-                    // this.plotToMap(newResto);
                     this.initInfoWindow(newResto);
                 });
 
@@ -52,12 +56,30 @@ export default {
 
             },
             deep: false
+        },
+        queryText(newVal) {
+            if(newVal !== '') {
+                if(this.debounceTimer) {
+                    clearTimeout(this.debounceTimer);
+                }
+
+                this.debounceTimer  = setTimeout(() =>{
+                    this.getRestaurantsWithFilters();
+                },800);
+
+            } else {
+                this.getRestaurants();
+            }
         }
     },
     methods: {
-        toggleFilter(value) {
-            Object.assign(this.filterTypes, value);
-            this.toggleMarkers();
+        toggleFilters(index, status) {
+            this.$store.dispatch('map/toggleFilter',
+                {
+                    index:index, 
+                    status:!status
+                }
+            );
         },
         toggleMarkers() {
             let show = false;
@@ -74,11 +96,7 @@ export default {
 
         },
         resetFilters() {
-            Object.keys(this.filterTypes).forEach(filter => {
-                this.filterTypes[filter] = true;
-            })
-            this.$root.$emit('chip:reset', true);
-            this.toggleMarkers();
+            this.$store.state.map.filters.map(f => {f.status = false});
         },
         initMarker(resto) {
 
@@ -145,8 +163,6 @@ export default {
             }
 
             PlacesService.getInfo(this.service, request).then(info => {
-                console.log('specialty food :(', info);
-
                 restaurant.address = info.formatted_address;
                 restaurant.phoneNumber = info.international_phone_number;
                 restaurant.website = info.website;
@@ -170,6 +186,17 @@ export default {
             M.toast({html: "FILTER: Restaurant is not shown", displayLength: 2000});
 
         },
+        getRestaurantsWithFilters() {
+
+            let textSearchConfig = {
+                query: 'Restaurants that sell '+this.queryText,
+                location: this.map.getCenter(),
+                radius: 50000,
+                type: ['restaurant'],
+            }
+
+            this.fetchRestaurants(textSearchConfig, 2);
+        },
         getRestaurants() {
             
             let restaurantSearchConfig = {
@@ -182,9 +209,10 @@ export default {
             
         },
 
-        fetchRestaurants(restaurantSearchConfig) {
+        fetchRestaurants(restaurantSearchConfig, searchType) {
 
-            PlacesService.getDetails(this.service, 0, restaurantSearchConfig)
+            this.isLoading = true;
+            PlacesService.getDetails(this.service, searchType, restaurantSearchConfig)
                 .then(data => {
 
                     let restaurants = [];
@@ -197,6 +225,9 @@ export default {
                     });
 
                     this.$store.dispatch('map/storeRestaurants', restaurants);
+
+                }).finally(() =>{
+                    this.isLoading = false;
 
                 });
         }
@@ -216,7 +247,6 @@ export default {
         });
 
         this.$root.$on('marker:click', (resto) => {
-            console.log(resto);
             this.showRestaurantInfo(resto);
         });
 

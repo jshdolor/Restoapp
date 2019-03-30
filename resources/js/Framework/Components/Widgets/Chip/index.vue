@@ -1,32 +1,23 @@
 <template>
-    <div class="chip waves-effect waves-light" :class="{'chip-checked': checked}" @click="toggle">
-        <small >{{formattedType}}</small>
+    <div class="chip waves-effect waves-light" 
+        :class="{'chip-checked': filter.status}" @click="toggle">
+        <small >{{filter.name}}</small>
         
     </div>
 </template>
 <script>
 export default {
     name: 'Chip',
-    props: ['type'],
-    computed: {
-        formattedType() {
-            return this.type.replace(/_/g,' ');
-        }
-    },
+    props: ['filter'],
     methods: {
         toggle() {
             this.checked = !this.checked;
-            this.$emit('chip:toggled', {[this.type]: this.checked});
-        }
-    },
-    data() {
-        return {
-            checked: true
+            this.$store.dispatch('map/toggleFilter',{name:this.filter.name, status:this.checked});
         }
     },
     mounted() {
         this.$root.$on('chip:reset', () => {
-            this.checked = true;
+            this.$store.dispatch('map/toggleFilter',{name:this.filter.name, status:false});
         })
     }
 }

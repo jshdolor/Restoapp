@@ -43,6 +43,12 @@ export default {
         },
         markers() {
             return pluck(this.restaurants, 'marker');
+        },
+        filters() {
+            return this.$store.state.map.filters;
+        },
+        queryText() {
+            return pluck(this.filters.filter(p => p.status), 'name').join(',');
         }
     },
     data() {
@@ -92,14 +98,22 @@ export default {
         },
         getRestaurantsInRadius(center, radius) {
 
-            let restaurantSearchConfig = {
+            let searchConfig = {
                 location: center,
                 radius: radius,
                 type: ['restaurant'],
             };
 
+            let searchType = 0;
+
+            if(this.queryText !== '') {
+                searchConfig.name = this.queryText;
+                //the search is acting weird: getting places outside the radius
+                searchConfig.radius -= 200;
+            }
+
             this.isFetching = true;
-            PlacesService.getDetails(this.service, 0, restaurantSearchConfig)
+            PlacesService.getDetails(this.service, searchType, searchConfig)
                 .then(rawRestaurants => {
                     
                     M.toast({

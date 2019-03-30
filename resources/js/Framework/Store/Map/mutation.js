@@ -23,4 +23,8 @@ export default {
     setSelectedRestaurant(state, data) {
         state.selectedRestaurant = data;
     },
+
+    toggleFilter(state, data) {
+        state.filters[data.index].status = data.status;
+    },
 }
