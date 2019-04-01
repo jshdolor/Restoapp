@@ -25,7 +25,7 @@ export default class PlacesService{
         }); 
     }
 
-    static getDetails(service, fetchType = 0, config) {
+    static getDetails(service, fetchType = 0, config, root, isNewSet) {
 
         let searchType = [
             'nearbySearch',
@@ -33,23 +33,31 @@ export default class PlacesService{
             'textSearch'
         ];
         
+        if(isNewSet) {
+            window.Store.state.map.restaurants = [];
+        }
+
         let resultData = [];
 
         return new Promise((resolve, reject) => {
             service[searchType[fetchType]](config , (data, status, pagination) => {
 
                 resultData = resultData.concat(data);
+                
+                root.$emit('resto:fetched', data);
 
                 if(pagination.hasNextPage) {
                     pagination.nextPage();
                 } else {
+
+                    if(resultData.length === 0) {
+                        M.toast({html: "No Restaurants Fetched..", displayLength: 2000});
+                        reject(new Error("No Restaurants"));
+                    } 
+
                     resolve(resultData);
                 }
 
-                if(resultData.length === 0) {
-                    M.toast({html: "No Restaurants Fetched..", displayLength: 2000});
-                    reject(new Error("No Restaurants"));
-                } 
             });
 
         })

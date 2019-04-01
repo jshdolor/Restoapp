@@ -46,14 +46,11 @@ export default {
     watch: {
         restaurants: {
             handler(newVal, oldVal) {
-                this.isLoading = true;
                 newVal.forEach((newResto) => {
                     this.initInfoWindow(newResto);
                 });
 
                 this.updateFilters();
-                this.isLoading = false;
-
             },
             deep: false
         },
@@ -188,8 +185,10 @@ export default {
         },
         getRestaurantsWithFilters() {
 
+            this.$root.$emit('circle:clear', true);
+
             let textSearchConfig = {
-                query: 'Restaurants that sell '+this.queryText,
+                query: 'Restaurants that sell '+this.queryText+ ' in Cebu City, Philippines',
                 location: this.map.getCenter(),
                 radius: 50000,
                 type: ['restaurant'],
@@ -201,7 +200,7 @@ export default {
             
             let restaurantSearchConfig = {
                 location: this.map.getCenter(),
-                radius: 50000,
+                radius: 5000,
                 type: ['restaurant'],
             };
 
@@ -212,21 +211,22 @@ export default {
         fetchRestaurants(restaurantSearchConfig, searchType) {
 
             this.isLoading = true;
-            PlacesService.getDetails(this.service, searchType, restaurantSearchConfig)
+            PlacesService.getDetails(this.service, searchType, restaurantSearchConfig, this.$root, true)
                 .then(data => {
 
-                    let restaurants = [];
-                    data.forEach(resto => {
-                        let restaurant = new RestaurantModel(resto);
-                        restaurant.marker.addListener('click', () =>{
-                            this.$root.$emit('marker:click', restaurant);
-                        });
-                        restaurants.push(restaurant);
-                    });
+                    // let restaurants = [];
+                    // data.forEach(resto => {
+                    //     let restaurant = new RestaurantModel(resto);
+                    //     restaurant.marker.addListener('click', () =>{
+                    //         this.$root.$emit('marker:click', restaurant);
+                    //     });
+                    //     restaurants.push(restaurant);
+                    // });
 
-                    this.$store.dispatch('map/storeRestaurants', restaurants);
+                    // this.$store.dispatch('map/storeRestaurants', restaurants);
 
                 }).finally(() =>{
+
                     this.isLoading = false;
 
                 });
@@ -243,6 +243,22 @@ export default {
             });
 
             this.getRestaurants();
+
+        });
+
+        this.$root.$on('resto:fetched', (data) => {
+
+            data.forEach(resto => {
+
+                let restaurant = new RestaurantModel(resto);
+
+                restaurant.marker.addListener('click', () =>{
+                    this.$root.$emit('marker:click', restaurant);
+                });
+
+                this.$store.dispatch('map/concatRestaurants', restaurant);
+
+            });
 
         });
 

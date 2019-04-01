@@ -8,6 +8,10 @@ export default {
         state.restaurants = data;
     },
 
+    concatRestaurants(state, data) {
+        state.restaurants.push(data);
+    },
+
     storePlaceId(state, data) {
         state.placeId = data;
     },

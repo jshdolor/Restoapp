@@ -109,21 +109,25 @@ export default {
             if(this.queryText !== '') {
                 searchConfig.name = this.queryText;
                 //the search is acting weird: getting places outside the radius
-                searchConfig.radius -= 200;
+                searchConfig.radius -= 400;
+
+                if(searchConfig.radius < 0) {
+                    searchConfig.radius = 0;
+                }
             }
 
             this.isFetching = true;
-            PlacesService.getDetails(this.service, searchType, searchConfig)
+            PlacesService.getDetails(this.service, searchType, searchConfig, this.$root, false)
                 .then(rawRestaurants => {
                     
                     M.toast({
                         html:`<span>Found ${rawRestaurants.length} Restaurant/s</span>`
                     });
 
-                    rawRestaurants.forEach(resto => {
-                        let restaurant = new RestaurantModel(resto);
-                        this.$store.state.map.restaurants.push(restaurant);
-                    });
+                    // rawRestaurants.forEach(resto => {
+                    //     let restaurant = new RestaurantModel(resto);
+                    //     this.$store.state.map.restaurants.push(restaurant);
+                    // });
 
                 })
                 .finally(() => {
@@ -133,6 +137,10 @@ export default {
     },
     mounted() {
         this.$root.$emit('map:mounted', true);
+
+        this.$root.$on('circle:clear', () => {
+            this.circle.setMap(null);
+        })
     },
     created() {
 

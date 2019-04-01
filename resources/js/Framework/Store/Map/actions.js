@@ -6,6 +6,9 @@ export default {
     storeRestaurants({commit}, data) {
         commit('storeRestaurants', data);
     },
+    concatRestaurants({commit}, data) {
+        commit('concatRestaurants', data);
+    },
     storePlaceId({commit}, data) {
         commit('storePlaceId', data);
     },
