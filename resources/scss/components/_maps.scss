@@ -17,6 +17,16 @@
         }
     }
 
+
+    .btn-remove-start-direction {
+        position: fixed;
+        right: 120px;
+        bottom: 20px;
+        .preloader-wrapper {
+            margin-top: 10px;
+        }
+    }
+
     .restaurant-loader {
         position: fixed;
         right: 60px;

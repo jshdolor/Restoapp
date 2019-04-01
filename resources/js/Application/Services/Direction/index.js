@@ -19,9 +19,9 @@ export default class DirectionService {
                         
                     },
                     () => {
-                        M.toast({
-                            html: `Position Not Found! Allow your browser to locate your position.`,
-                        });
+                        //navigator cannot get the current position of the user
+                        reject(true);
+              
                     },
                     {
                         enableHighAccuracy: true, 
@@ -30,9 +30,7 @@ export default class DirectionService {
                     }
                 );
             } else {
-                M.toast({
-                    html: `Position Not Found!`,
-                });
+                reject(true);
             }
         });
     }
@@ -58,19 +56,21 @@ export default class DirectionService {
     
             this.dd().set('directions', null);
             this.dd().setMap(map);
-    
-            this.getUserCoordinates().then(origin => {
-    
+            
+            let directionMarker = window.Store.state.map.directionMarker;
+
+            if(directionMarker) {
+
                 let request = {
-                    origin: origin,
+                    origin: directionMarker.position,
                     destination: new google.maps.LatLng(destination.lat, destination.lng),
                     travelMode: 'DRIVING'
                 };
-    
+        
                 M.toast({
-                    html: `Current Position: (${origin.lat()},${origin.lng()})`,
+                    html: `Current Position: (${directionMarker.position.lat()},${directionMarker.position.lng()})`,
                 });
-    
+        
                 this.ds().route(request, (dresult, dstatus) => {
                     if (dstatus == 'OK') {
                         
@@ -84,7 +84,42 @@ export default class DirectionService {
                     }
                     
                 });
-            })
+
+            } else {
+
+                this.getUserCoordinates().then(origin => {
+
+                    let request = {
+                        origin: origin,
+                        destination: new google.maps.LatLng(destination.lat, destination.lng),
+                        travelMode: 'DRIVING'
+                    };
+            
+                    M.toast({
+                        html: `Current Position: (${origin.lat()},${origin.lng()})`,
+                    });
+            
+                    this.ds().route(request, (dresult, dstatus) => {
+                        if (dstatus == 'OK') {
+                            
+                            this.dd().setDirections(dresult);
+                            resolve(dresult);
+                        } else {
+                            M.toast({
+                                html: dstatus,
+                                displayLength: 2000
+                            });
+                        }
+                        
+                    });
+
+                }).catch(error => {
+                    reject(false);
+                });
+
+            }
+
+            
 
         }) ;
 

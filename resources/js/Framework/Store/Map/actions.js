@@ -23,6 +23,10 @@ export default {
     },
     toggleFilter({commit}, data) {
         commit('toggleFilter',data);
-    }
+    },
+
+    setDirectionMarker({commit}, data) {
+        commit('setDirectionMarker',data);
+    },
 
 };

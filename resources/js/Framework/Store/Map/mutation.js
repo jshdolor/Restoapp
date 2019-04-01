@@ -31,4 +31,8 @@ export default {
     toggleFilter(state, data) {
         state.filters[data.index].status = data.status;
     },
+
+    setDirectionMarker(state, data) {
+        state.directionMarker = data;
+    },
 }

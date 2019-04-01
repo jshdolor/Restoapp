@@ -31,6 +31,9 @@ export default {
         },
         map() {
             return this.$store.state.map.map;
+        },
+        directionMarker() {
+            return this.$store.state.map.directionMarker;
         }
     },
     methods: {
@@ -50,15 +53,18 @@ export default {
                 this.selectedRestaurant.getCoordinates(),
                 this.map).then(
                     ({routes}) => {
-                    
                     let [route] = routes;
-                    this.$root.$emit('steps:fetched', route.legs[0].steps);
 
-                }).finally(() => {
+                    this.$root.$emit('steps:fetched', route.legs[0].steps);
                     this.directionModal.open();
+
+                }).catch(e => {
+                    console.log(e);
+                }).finally(() => {
                     this.isLoading = false;
                 })
         },
+        
     },
     mounted(){ 
         this.directionModal = M.Modal.init(document.querySelectorAll('#directionModal'))[0];

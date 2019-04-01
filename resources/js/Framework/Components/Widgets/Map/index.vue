@@ -5,6 +5,13 @@
     <div class="restaurant-loader">
         <Loader v-show="isFetching"></Loader>
     </div>
+    <a @click="setCurrentPosition"
+        data-position="top" 
+        :data-tooltip="directionMarker ? 'Remove Position':'Set Position'"
+        class="btn-floating btn-remove-start-direction btn-large red darken-1 waves-effect waves-light z-depth-2"
+        >
+        <i class="material-icons white-text darken-4">add_location</i>
+    </a>
 </div>
 </template>
 
@@ -49,13 +56,17 @@ export default {
         },
         queryText() {
             return pluck(this.filters.filter(p => p.status), 'name').join(',');
+        },
+        directionMarker() {
+            return this.$store.state.map.directionMarker;
         }
+
     },
     data() {
         return {
-            manager: null,
+            drawManager: null,
             circle: null,
-            isFetching: false
+            isFetching: false,
         }
     },
     watch: {
@@ -133,21 +144,39 @@ export default {
                 .finally(() => {
                     this.isFetching = false;
                 });
+        },
+        setCurrentPosition() {
+            if(this.directionMarker) {
+
+                this.directionMarker.setMap(null);
+                this.$store.dispatch('map/setDirectionMarker', null);
+                this.drawManager.manager.setDrawingMode(null);
+
+            } else {
+
+                this.drawManager.manager.setDrawingMode(google.maps.drawing.OverlayType.MARKER);
+
+            }
         }
     },
     mounted() {
         this.$root.$emit('map:mounted', true);
 
         this.$root.$on('circle:clear', () => {
-            this.circle.setMap(null);
-        })
+            if(this.circle) {
+                this.circle.setMap(null);
+            }
+        });
+
+        M.Tooltip.init(document.querySelectorAll('.btn-remove-start-direction'));
+
     },
     created() {
 
         this.$root.$on('places:init', () => {
-            let dm = new DrawingManager(this.map);
+            this.drawManager = new DrawingManager(this.map);
 
-            google.maps.event.addListener(dm.manager, 'circlecomplete', (event) => {
+            google.maps.event.addListener(this.drawManager.manager, 'circlecomplete', (event) => {
                 // Get circle center and radius
                 var center = event.getCenter();
                 var radius = event.getRadius();
@@ -156,6 +185,23 @@ export default {
                 if(radius) {
                     this.createCircle(center, radius);
                 }
+            });
+
+            google.maps.event.addListener(this.drawManager.manager, 'markercomplete',  (marker) => {
+
+                if(this.directionMarker) {
+                    this.directionMarker.setMap(null);
+                }
+                this.drawManager.manager.setDrawingMode(null);
+                marker.setDraggable(true);
+
+                this.$store.dispatch('map/setDirectionMarker', marker);
+
+
+            });
+
+            google.maps.event.addListener(this.map,'click',function(event) {   
+
             });
         });
     }

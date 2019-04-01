@@ -8,9 +8,13 @@ export default class GoogleDraw {
     }
 
     init() {
+
         this.manager = new google.maps.drawing.DrawingManager({
             drawingMode: google.maps.drawing.OverlayType.CIRCLE,
             drawingControl: true,
+            markerOptions: {
+                label: 'A',
+            },
             drawingControlOptions: {
                 position: google.maps.ControlPosition.RIGHT,
                 drawingModes: ['circle']

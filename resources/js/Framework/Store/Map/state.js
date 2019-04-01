@@ -6,6 +6,7 @@ export default {
     placesService: null,
     markers:[],
     selectedRestaurant: {},
+    directionMarker:null,
     filters: [
         {
             name: 'chicken',
